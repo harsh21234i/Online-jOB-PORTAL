@@ -1,6 +1,5 @@
 D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\main\java\com\jobportal\job_portal\ServletInitializer.java
 D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\main\java\com\jobportal\job_portal\repository\WebSecurityConfig.java
-D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\main\java\com\jobportal\job_portal\Config\ThymeleafConfig.java
 D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\main\java\com\jobportal\job_portal\JobPortalApplication.java
 D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\main\java\com\jobportal\job_portal\controllers\UserController.java
 D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\main\java\com\jobportal\job_portal\Entity\User.java
