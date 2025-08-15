@@ -1,0 +1,4 @@
+com\jobportal\job_portal\Config\SecurityConfig.class
+com\jobportal\job_portal\DatabaseConnectionTest.class
+com\jobportal\job_portal\JobPortalApplicationTests.class
+com\jobportal\job_portal\services\UserServiceTest.class
