@@ -1,5 +1,4 @@
 com\jobportal\job_portal\repository\ApplicationRepository.class
-com\jobportal\job_portal\repository\WebSecurityConfig.class
 com\jobportal\job_portal\Entity\Application.class
 com\jobportal\job_portal\Entity\User.class
 com\jobportal\job_portal\GlobalExceptionHandler.class
@@ -7,6 +6,7 @@ com\jobportal\job_portal\repository\UserRepository.class
 com\jobportal\job_portal\Entity\Application$Status.class
 JobDTO.class
 com\jobportal\job_portal\JobPortalApplication.class
+com\jobportal\job_portal\Config\SecurityConfig.class
 com\jobportal\job_portal\services\UserService.class
 com\jobportal\job_portal\repository\JobRepository.class
 com\jobportal\job_portal\controllers\HomeController.class
