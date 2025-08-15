@@ -1,4 +1,4 @@
-package com.jobportal.job_portal.models;
+package com.jobportal.job_portal.Entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

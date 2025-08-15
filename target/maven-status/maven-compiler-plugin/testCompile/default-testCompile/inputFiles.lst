@@ -1,4 +1,4 @@
-E:\apache-maven-3.9.9-bin\job-portal\job-portal\src\test\java\com\jobportal\job_portal\DatabaseConnectionTest.java
-E:\apache-maven-3.9.9-bin\job-portal\job-portal\src\test\java\com\jobportal\job_portal\JobPortalApplicationTests.java
-E:\apache-maven-3.9.9-bin\job-portal\job-portal\src\test\java\com\jobportal\job_portal\Config\SecurityConfig.java
-E:\apache-maven-3.9.9-bin\job-portal\job-portal\src\test\java\com\jobportal\job_portal\services\UserServiceTest.java
+D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\test\java\com\jobportal\job_portal\services\UserServiceTest.java
+D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\test\java\com\jobportal\job_portal\Config\SecurityConfig.java
+D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\test\java\com\jobportal\job_portal\DatabaseConnectionTest.java
+D:\projects\job-portal\job-portal\Online-jOB-PORTAL\src\test\java\com\jobportal\job_portal\JobPortalApplicationTests.java

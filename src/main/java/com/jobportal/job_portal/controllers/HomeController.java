@@ -5,39 +5,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import com.jobportal.job_portal.models.User;
+import com.jobportal.job_portal.Entity.User;
 import com.jobportal.job_portal.services.UserService;
 
 @Controller
 public class HomeController {
 
     @Autowired
-    private UserService userService; // Inject the actual UserService class
+    private UserService userService; // Injected service instance
 
     // 1. Display Home Page
     @GetMapping("/")
     public String homePage(HttpSession session, Model model) {
-        // Check if user is in session
         String username = (String) session.getAttribute("username");
-        if (username == null) {
-            model.addAttribute("username", "Guest");
-        } else {
-            model.addAttribute("username", username);
-        }
-        return "index";  // Renders index.html
+        model.addAttribute("username", username != null ? username : "Guest");
+        return "index";
     }
 
     // 2. Show Login Page
     @GetMapping("/login")
     public String loginPage(HttpSession session) {
-        // Check if user is already logged in
         if (session.getAttribute("username") != null) {
-            return "redirect:/";  // Redirect to home if already logged in
+            return "redirect:/";
         }
-        return "login";  // Renders login.html
+        return "login";
     }
 
-    // 3. Handle Login (Manual)
+    // 3. Handle Login
     @PostMapping("/login")
     public String handleLogin(
             @RequestParam String email,
@@ -45,14 +39,12 @@ public class HomeController {
             HttpSession session,
             Model model
     ) {
-        // Check if user exists in the database and passwords match
+        // ✅ Use injected instance, not the class
         User user = userService.getUserByEmail(email);
         if (user != null && userService.checkPassword(user, password)) {
-            // Store user in session
             session.setAttribute("username", email);
-            return "redirect:/dashboard";  // Redirect to dashboard after login
+            return "redirect:/dashboard";
         } else {
-            // Show error on login page
             model.addAttribute("error", "Invalid credentials. Please try again.");
             return "login";
         }
@@ -61,7 +53,7 @@ public class HomeController {
     // 4. Show Register Page
     @GetMapping("/register")
     public String registerPage() {
-        return "register";  // Renders register.html
+        return "register";
     }
 
     // 5. Handle Registration
@@ -71,20 +63,19 @@ public class HomeController {
             @RequestParam String email,
             @RequestParam String password
     ) {
-        // Encrypt password and save the user to the database
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(password);  // Password will be encrypted in the service layer
+        user.setPassword(password); // will be encoded in service
 
-        userService.saveUser(user); // Save user to DB
-        return "redirect:/login";  // Redirect to login page
+        userService.saveUser(user); // ✅ use instance
+        return "redirect:/login";
     }
 
     // 6. Logout
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();  // Clear the session
-        return "redirect:/";    // Redirect to home page
+        session.invalidate();
+        return "redirect:/";
     }
 }

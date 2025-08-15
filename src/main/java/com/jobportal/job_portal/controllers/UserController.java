@@ -1,6 +1,6 @@
 package com.jobportal.job_portal.controllers;
 
-import com.jobportal.job_portal.models.User;
+import com.jobportal.job_portal.Entity.User;
 import com.jobportal.job_portal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,16 +14,16 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository userRepository; // use the instance
 
     // Create user
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         try {
-            User savedUser = userRepository.save(user);
-            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);  // 201 status code
+            User savedUser = userRepository.save(user); // use instance, not class
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);  // 500 status code
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -31,13 +31,13 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         try {
-            List<User> users = userRepository.findAll();
+            List<User> users = userRepository.findAll(); // use instance
             if (users.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);  // 204 if no content
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(users, HttpStatus.OK);  // 200 status code
+            return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);  // 500 status code
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

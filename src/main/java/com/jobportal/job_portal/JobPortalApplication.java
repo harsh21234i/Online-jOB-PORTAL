@@ -16,8 +16,5 @@ public class JobPortalApplication {
         SpringApplication.run(JobPortalApplication.class, args);
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Add this bean to your application
-    }
+
 }
