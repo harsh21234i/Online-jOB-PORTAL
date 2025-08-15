@@ -1,6 +1,6 @@
 package com.jobportal.job_portal.services;
 
-import com.jobportal.job_portal.models.Job;
+import com.jobportal.job_portal.Entity.Job;
 import com.jobportal.job_portal.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,8 @@ public class JobService {
         this.jobRepository = jobRepository;
     }
 
+    // Save a job
     public Job postJob(Job job) {
-        // Save the job to the database and return it
-        return jobRepository.save(job);
+        return jobRepository.save(job); // ✅ use instance, not class name
     }
 }

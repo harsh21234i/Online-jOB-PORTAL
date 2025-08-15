@@ -3,7 +3,7 @@ package com.jobportal.job_portal.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import com.jobportal.job_portal.models.User;
+import com.jobportal.job_portal.Entity.User;
 import com.jobportal.job_portal.repository.UserRepository;
 import com.jobportal.job_portal.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -50,10 +50,10 @@ public class UserServiceTest {
     public void testGetUserById() {
         // Arrange
         User user = new User("John Doe", "john@example.com", "password123", "JOB_SEEKER");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user)); // ✅ use instance, not class name
 
         // Act
-        Optional<User> result = userService.getUserById(1L); // Ensure correct method call
+        Optional<User> result = userService.getUserById(1L); // Use the service method
 
         // Assert
         assertThat(result).isPresent().contains(user);

@@ -1,6 +1,6 @@
 package com.jobportal.job_portal.services;
 
-import com.jobportal.job_portal.models.User;
+import com.jobportal.job_portal.Entity.User;
 import com.jobportal.job_portal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,33 +18,32 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Other methods...
-
-    // 1. Get user by email
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email); // Assuming findByEmail method exists in your repository
-    }
+    // Get all users
     public List<User> getAllUsers() {
-        return userRepository.findAll(); // This calls the findAll() method of JpaRepository
+        return userRepository.findAll(); // Use instance, not class
     }
-    // Method to get user by ID
+
+    // Get user by ID
     public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id); // This uses the findById method of JpaRepository
+        return userRepository.findById(id); // Use instance
     }
 
-    // 2. Check password method
+    // Get user by email
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null); // Use instance
+    }
+
+    // Check password
     public boolean checkPassword(User user, String rawPassword) {
-        return passwordEncoder.matches(rawPassword, user.getPassword()); // Comparing raw password with encrypted one
+        return passwordEncoder.matches(rawPassword, user.getPassword());
     }
+
+    // Save user
     public User saveUser(User user) {
-        // Encode the password before saving
+        // Encode password
         String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword); // Set the encoded password
+        user.setPassword(encodedPassword);
 
-        // Save the user to the database
-        return userRepository.save(user); // This saves the user into the database and returns the saved user
+        return userRepository.save(user); // Use instance
     }
-
-
-    // Other methods...
 }
