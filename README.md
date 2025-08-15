@@ -35,3 +35,38 @@ Database: MySQL
 Build Tool: Maven
 
 Version Control: Git & GitHub
+
+
+
+##STRUCTURE## 
+
+job-portal/
+│── src/
+│   ├── main/
+│   │   ├── java/com/jobportal/job_portal/
+│   │   │   ├── JobPortalApplication.java        # Main Spring Boot class
+│   │   │   ├── entity/                         # JPA Entities
+│   │   │   │    ├── User.java
+│   │   │   │    ├── Job.java
+│   │   │   │    └── Application.java
+│   │   │   ├── repository/                     # Spring Data JPA Repositories
+│   │   │   │    ├── UserRepository.java
+│   │   │   │    ├── JobRepository.java
+│   │   │   │    └── ApplicationRepository.java
+│   │   │   ├── service/                        # Business Logic
+│   │   │   │    ├── UserService.java
+│   │   │   │    ├── JobService.java
+│   │   │   │    └── ApplicationService.java
+│   │   │   └── controller/                     # REST APIs
+│   │   │        ├── UserController.java
+│   │   │        ├── JobController.java
+│   │   │        └── ApplicationController.java
+│   │   └── resources/
+│   │        ├── application.properties        # DB configs
+│   │        └── application-test.properties
+│   └── test/
+│        └── java/com/jobportal/job_portal/    # Unit tests
+│             └── JobPortalApplicationTests.java
+│
+├── pom.xml                                     # Maven dependencies
+└── README.md
