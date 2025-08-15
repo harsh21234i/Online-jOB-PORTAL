@@ -36,6 +36,7 @@ Build Tool: Maven
 
 Version Control: Git & GitHub
 
+## **STRUCTURE**
 
 job-portal/
 ├── src/
