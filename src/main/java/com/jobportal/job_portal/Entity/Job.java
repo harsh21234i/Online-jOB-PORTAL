@@ -11,7 +11,10 @@ public class Job {
 
     private String title;
     private String companyName;
+    @Lob   // Large Object
+    @Column(columnDefinition = "TEXT")
     private String description;
+    
 
     @ManyToOne
     private User postedBy; // The user who posted the job

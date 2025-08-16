@@ -26,7 +26,7 @@ public class JobController {
         if (email == null) return "redirect:/login";
 
         model.addAttribute("jobs", jobService.getAllJobs());
-        return "job-dashboard"; // create job-dashboard.html
+        return "dashboard"; // create job-dashboard.html
     }
 
     // Show Post Job form
