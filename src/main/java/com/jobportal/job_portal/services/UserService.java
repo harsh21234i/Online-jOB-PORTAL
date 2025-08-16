@@ -18,32 +18,23 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Get all users
-    public List<User> getAllUsers() {
-        return userRepository.findAll(); // Use instance, not class
+    public void saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
     }
 
-    // Get user by ID
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id); // Use instance
-    }
-
-    // Get user by email
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null); // Use instance
+        return userRepository.findByEmail(email);
     }
 
-    // Check password
     public boolean checkPassword(User user, String rawPassword) {
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
-    // Save user
-    public User saveUser(User user) {
-        // Encode password
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-
-        return userRepository.save(user); // Use instance
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 }

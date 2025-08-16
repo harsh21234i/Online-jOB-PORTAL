@@ -13,28 +13,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())  // disable CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(login -> login
-                        .loginPage("/login")
-                        .loginProcessingUrl("/perform_login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
-                        .permitAll()
-                );
+                .httpBasic(basic -> basic.disable())   // disable basic auth popup
+                .formLogin(form -> form.disable());    // disable Spring Security form login
 
         return http.build();
     }
 
-    // Make sure this bean exists for UserService
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
