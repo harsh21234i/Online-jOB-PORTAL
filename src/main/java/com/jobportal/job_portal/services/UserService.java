@@ -18,6 +18,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Save user with encoded password
     public void saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -30,6 +31,7 @@ public class UserService {
     public boolean checkPassword(User user, String rawPassword) {
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

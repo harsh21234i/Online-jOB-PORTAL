@@ -14,11 +14,11 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
-    // Home page / dashboard
+    // Home page
     @GetMapping("/")
     public String homePage(HttpSession session, Model model) {
-        String username = (String) session.getAttribute("username");
-        model.addAttribute("username", username != null ? username : "Guest");
+        String email = (String) session.getAttribute("username");
+        model.addAttribute("username", email != null ? email : "Guest");
         return "index";
     }
 
@@ -26,12 +26,12 @@ public class HomeController {
     @GetMapping("/login")
     public String loginPage(HttpSession session) {
         if (session.getAttribute("username") != null) {
-            return "redirect:/"; // already logged in
+            return "redirect:/dashboard"; // already logged in
         }
         return "login";
     }
 
-    // Handle login POST
+    // Login POST
     @PostMapping("/login")
     public String handleLogin(@RequestParam String email,
                               @RequestParam String password,
@@ -39,8 +39,8 @@ public class HomeController {
                               Model model) {
         User user = userService.getUserByEmail(email);
         if (user != null && userService.checkPassword(user, password)) {
-            session.setAttribute("username", user.getEmail()); // email as username
-            return "redirect:/";
+            session.setAttribute("username", user.getEmail());
+            return "redirect:/dashboard"; // ✅ redirect after login
         } else {
             model.addAttribute("error", "Invalid credentials. Please try again.");
             return "login";
@@ -53,7 +53,7 @@ public class HomeController {
         return "register";
     }
 
-    // Handle registration POST
+    // Registration POST
     @PostMapping("/register")
     public String handleRegistration(@RequestParam String name,
                                      @RequestParam String email,
@@ -61,9 +61,9 @@ public class HomeController {
                                      @RequestParam(required = false) String role) {
         User user = new User();
         user.setName(name);
-        user.setEmail(email);          // email as username
-        user.setPassword(password);    // will encode in service
-        user.setRole(role != null ? role : "USER"); // default role if null
+        user.setEmail(email);
+        user.setPassword(password);  // encoded in service
+        user.setRole(role != null ? role : "USER");
         userService.saveUser(user);
         return "redirect:/login";
     }
@@ -74,13 +74,16 @@ public class HomeController {
         session.invalidate();
         return "redirect:/login?logout=true";
     }
+
+    // Dashboard
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         String email = (String) session.getAttribute("username");
-        if(email == null) return "redirect:/login";
+        if (email == null) {
+            return "redirect:/login"; // ✅ check manually
+        }
         User user = userService.getUserByEmail(email);
         model.addAttribute("user", user);
-        return "dashboard"; // create dashboard.html
+        return "dashboard";
     }
-
 }

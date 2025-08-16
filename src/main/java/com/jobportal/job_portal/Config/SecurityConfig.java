@@ -13,13 +13,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())  // disable CSRF
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+                        .anyRequest().permitAll() // ✅ allow everything, rely on manual session checks
                 )
-                .httpBasic(basic -> basic.disable())   // disable basic auth popup
-                .formLogin(form -> form.disable());    // disable Spring Security form login
+                .formLogin(form -> form.disable())    // disable Spring’s own login page
+                .httpBasic(basic -> basic.disable()); // disable browser popup login
 
         return http.build();
     }

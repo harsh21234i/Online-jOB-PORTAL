@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/jobs")
 public class JobController {
 
     @Autowired
@@ -20,38 +19,35 @@ public class JobController {
     @Autowired
     private UserService userService;
 
-    // Show job dashboard
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    // Job dashboard - list all jobs
+    @GetMapping("/jobs")
+    public String jobDashboard(HttpSession session, Model model) {
         String email = (String) session.getAttribute("username");
         if (email == null) return "redirect:/login";
 
-        User user = userService.getUserByEmail(email);
-        model.addAttribute("user", user);
         model.addAttribute("jobs", jobService.getAllJobs());
-        return "job-dashboard";
+        return "job-dashboard"; // create job-dashboard.html
     }
 
-    // Show job posting form
-    @GetMapping("/post")
-    public String showPostForm(HttpSession session, Model model) {
-        String email = (String) session.getAttribute("username");
-        if (email == null) return "redirect:/login";
-
-        model.addAttribute("job", new Job());
-        return "post-job";
+    // Show Post Job form
+    @GetMapping("/jobs/post")
+    public String postJobPage(HttpSession session) {
+        if (session.getAttribute("username") == null) return "redirect:/login";
+        return "post-job"; // create post-job.html
     }
 
-    // Handle job posting
-    @PostMapping("/post")
-    public String handlePost(@ModelAttribute Job job, HttpSession session) {
+    // Handle Post Job form
+    @PostMapping("/jobs/post")
+    public String handlePostJob(@RequestParam String title,
+                                @RequestParam String companyName,
+                                @RequestParam String description,
+                                HttpSession session) {
         String email = (String) session.getAttribute("username");
         if (email == null) return "redirect:/login";
 
         User user = userService.getUserByEmail(email);
-        job.setPostedBy(user);
-        jobService.saveJob(job);
-
-        return "redirect:/jobs/dashboard";
+        Job job = new Job(title, companyName, description);
+        jobService.postJob(job); // save job
+        return "redirect:/jobs";
     }
 }
