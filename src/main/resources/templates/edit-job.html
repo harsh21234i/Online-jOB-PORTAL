@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Job</title>
+</head>
+<body>
+<h2>Edit Job</h2>
+<form th:action="@{'/job/update/' + ${job.id}}" th:object="${job}" method="post">
+    <label>Title:</label>
+    <input type="text" th:field="*{title}" /><br/><br/>
+    <label>Company Name:</label>
+    <input type="text" th:field="*{companyName}" /><br/><br/>
+    <label>Description:</label>
+    <textarea th:field="*{description}" rows="5" cols="30"></textarea><br/><br/>
+    <button type="submit">Update Job</button>
+</form>
+<a th:href="@{/job-dashboard}">Cancel</a>
+</body>
+</html>

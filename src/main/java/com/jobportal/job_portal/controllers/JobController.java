@@ -2,6 +2,7 @@ package com.jobportal.job_portal.controllers;
 
 import com.jobportal.job_portal.Entity.Job;
 import com.jobportal.job_portal.Entity.User;
+import com.jobportal.job_portal.repository.JobRepository;
 import com.jobportal.job_portal.services.JobService;
 import com.jobportal.job_portal.services.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -17,6 +18,9 @@ public class JobController {
     private JobService jobService;
 
     @Autowired
+    private JobRepository jobRepository;
+
+    @Autowired
     private UserService userService;
 
     // Job dashboard - list all jobs
@@ -26,14 +30,14 @@ public class JobController {
         if (email == null) return "redirect:/login";
 
         model.addAttribute("jobs", jobService.getAllJobs());
-        return "dashboard"; // create job-dashboard.html
+        return "dashboard"; // dashboard.html
     }
 
     // Show Post Job form
     @GetMapping("/jobs/post")
     public String postJobPage(HttpSession session) {
         if (session.getAttribute("username") == null) return "redirect:/login";
-        return "post-job"; // create post-job.html
+        return "post-job"; // post-job.html
     }
 
     // Handle Post Job form
@@ -48,6 +52,36 @@ public class JobController {
         User user = userService.getUserByEmail(email);
         Job job = new Job(title, companyName, description);
         jobService.postJob(job); // save job
-        return "redirect:/jobs";
+        return "redirect:/jobs"; // redirect to dashboard
+    }
+
+    // Show edit form
+    @GetMapping("/job/edit/{id}")
+    public String editJobForm(@PathVariable Long id, Model model) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
+        model.addAttribute("job", job);
+        return "edit-job"; // edit-job.html
+    }
+
+    // Handle edit submission
+    @PostMapping("/job/update/{id}")
+    public String updateJob(@PathVariable Long id, @ModelAttribute Job job) {
+        Job existingJob = jobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
+        existingJob.setTitle(job.getTitle());
+        existingJob.setCompanyName(job.getCompanyName());
+        existingJob.setDescription(job.getDescription());
+        jobRepository.save(existingJob);
+        return "redirect:/jobs"; // redirect to dashboard
+    }
+
+    // Delete job
+    @GetMapping("/job/delete/{id}")
+    public String deleteJob(@PathVariable Long id) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
+        jobRepository.delete(job);
+        return "redirect:/jobs"; // redirect to dashboard
     }
 }
