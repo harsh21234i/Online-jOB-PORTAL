@@ -7,12 +7,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.jobportal.job_portal.Entity.User;
 import com.jobportal.job_portal.services.UserService;
+import com.jobportal.job_portal.services.JobService;
 
 @Controller
 public class HomeController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JobService jobService; // ✅ Added to fetch jobs
 
     // Home page
     @GetMapping("/")
@@ -75,7 +79,7 @@ public class HomeController {
         return "redirect:/login?logout=true";
     }
 
-    // Dashboard
+    // Dashboard (with jobs + user)
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         String email = (String) session.getAttribute("username");
@@ -84,6 +88,10 @@ public class HomeController {
         }
         User user = userService.getUserByEmail(email);
         model.addAttribute("user", user);
+
+        // ✅ Fetch all jobs
+        model.addAttribute("jobs", jobService.getAllJobs());
+
         return "dashboard";
     }
 }

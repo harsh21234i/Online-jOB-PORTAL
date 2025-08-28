@@ -10,24 +10,18 @@ import java.util.List;
 @Service
 public class JobService {
 
-    private final JobRepository jobRepository;
-
     @Autowired
-    public JobService(JobRepository jobRepository) {
-        this.jobRepository = jobRepository;
-    }
-
-    // Save a job (used in controller)
-    public Job saveJob(Job job) {
-        return jobRepository.save(job);
-    }
-    public Job postJob(Job job) {
-        return jobRepository.save(job);
-    }
+    private JobRepository jobRepository;
 
 
-    // List all jobs
+
+    public void postJob(Job job) {
+        jobRepository.save(job);
+    }
     public List<Job> getAllJobs() {
-        return jobRepository.findAll();
+        List<Job> jobs = jobRepository.findAll();
+        System.out.println("Fetched Jobs: " + jobs.size());
+        return jobs;
     }
+
 }

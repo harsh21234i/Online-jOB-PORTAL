@@ -51,24 +51,43 @@ public class JobController {
 
         User user = userService.getUserByEmail(email);
         Job job = new Job(title, companyName, description);
-        jobService.postJob(job); // save job
+        job.setPostedBy(user); // ✅ link job to user
+        jobService.postJob(job);
         return "redirect:/jobs"; // redirect to dashboard
     }
 
-    // Show edit form
+    // Show edit form (only owner can see it)
     @GetMapping("/job/edit/{id}")
-    public String editJobForm(@PathVariable Long id, Model model) {
+    public String editJobForm(@PathVariable Long id, HttpSession session, Model model) {
+        String email = (String) session.getAttribute("username");
+        if (email == null) return "redirect:/login";
+
+        User currentUser = userService.getUserByEmail(email);
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
+
+        if (!job.getPostedBy().getId().equals(currentUser.getId())) {
+            return "error/403"; // ❌ forbidden page
+        }
+
         model.addAttribute("job", job);
         return "edit-job"; // edit-job.html
     }
 
     // Handle edit submission
     @PostMapping("/job/update/{id}")
-    public String updateJob(@PathVariable Long id, @ModelAttribute Job job) {
+    public String updateJob(@PathVariable Long id, @ModelAttribute Job job, HttpSession session) {
+        String email = (String) session.getAttribute("username");
+        if (email == null) return "redirect:/login";
+
+        User currentUser = userService.getUserByEmail(email);
         Job existingJob = jobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
+
+        if (!existingJob.getPostedBy().getId().equals(currentUser.getId())) {
+            return "error/403"; // ❌ forbidden
+        }
+
         existingJob.setTitle(job.getTitle());
         existingJob.setCompanyName(job.getCompanyName());
         existingJob.setDescription(job.getDescription());
@@ -76,11 +95,20 @@ public class JobController {
         return "redirect:/jobs"; // redirect to dashboard
     }
 
-    // Delete job
+    // Delete job (only owner can delete)
     @GetMapping("/job/delete/{id}")
-    public String deleteJob(@PathVariable Long id) {
+    public String deleteJob(@PathVariable Long id, HttpSession session) {
+        String email = (String) session.getAttribute("username");
+        if (email == null) return "redirect:/login";
+
+        User currentUser = userService.getUserByEmail(email);
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job Id:" + id));
+
+        if (!job.getPostedBy().getId().equals(currentUser.getId())) {
+            return "error/403"; // ❌ forbidden
+        }
+
         jobRepository.delete(job);
         return "redirect:/jobs"; // redirect to dashboard
     }
