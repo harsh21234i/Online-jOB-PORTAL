@@ -19,9 +19,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String role; // optional
+    private String role; // e.g., "USER", "ADMIN"
 
-    public User() {} // no-arg constructor
+    public User() {}
 
     public User(String name, String email, String password, String role) {
         this.name = name;

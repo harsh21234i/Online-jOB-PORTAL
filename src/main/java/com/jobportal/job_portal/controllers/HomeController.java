@@ -1,63 +1,45 @@
 package com.jobportal.job_portal.controllers;
 
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jobportal.job_portal.Entity.Job;
+import com.jobportal.job_portal.Entity.User;
+import com.jobportal.job_portal.services.JobService;
+import com.jobportal.job_portal.services.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import com.jobportal.job_portal.Entity.User;
-import com.jobportal.job_portal.services.UserService;
-import com.jobportal.job_portal.services.JobService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class HomeController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final JobService jobService;
 
-    @Autowired
-    private JobService jobService; // ✅ Added to fetch jobs
+    public HomeController(UserService userService, JobService jobService) {
+        this.userService = userService;
+        this.jobService = jobService;
+    }
 
-    // Home page
     @GetMapping("/")
-    public String homePage(HttpSession session, Model model) {
-        String email = (String) session.getAttribute("username");
-        model.addAttribute("username", email != null ? email : "Guest");
+    public String homePage() {
         return "index";
     }
 
-    // Login page
     @GetMapping("/login")
-    public String loginPage(HttpSession session) {
-        if (session.getAttribute("username") != null) {
-            return "redirect:/dashboard"; // already logged in
-        }
+    public String loginPage() {
         return "login";
     }
 
-    // Login POST
-    @PostMapping("/login")
-    public String handleLogin(@RequestParam String email,
-                              @RequestParam String password,
-                              HttpSession session,
-                              Model model) {
-        User user = userService.getUserByEmail(email);
-        if (user != null && userService.checkPassword(user, password)) {
-            session.setAttribute("username", user.getEmail());
-            return "redirect:/dashboard"; // ✅ redirect after login
-        } else {
-            model.addAttribute("error", "Invalid credentials. Please try again.");
-            return "login";
-        }
-    }
-
-    // Registration page
     @GetMapping("/register")
     public String registerPage() {
         return "register";
     }
 
-    // Registration POST
     @PostMapping("/register")
     public String handleRegistration(@RequestParam String name,
                                      @RequestParam String email,
@@ -66,32 +48,82 @@ public class HomeController {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(password);  // encoded in service
+        user.setPassword(password);
         user.setRole(role != null ? role : "USER");
         userService.saveUser(user);
         return "redirect:/login";
     }
 
-    // Logout
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login?logout=true";
-    }
-
-    // Dashboard (with jobs + user)
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        String email = (String) session.getAttribute("username");
-        if (email == null) {
-            return "redirect:/login"; // ✅ check manually
-        }
-        User user = userService.getUserByEmail(email);
+    public String dashboard(@AuthenticationPrincipal UserDetails userDetails,
+                            @RequestParam(required = false) String keyword,
+                            @RequestParam(required = false) String title,
+                            @RequestParam(required = false) String company,
+                            @RequestParam(required = false) String location,
+                            @RequestParam(required = false) Double minSalary,
+                            @RequestParam(required = false) Double maxSalary,
+                            @RequestParam(defaultValue = "0") int page,
+                            Model model) {
+
+        User user = userService.getUserByEmail(userDetails.getUsername());
         model.addAttribute("user", user);
 
-        // ✅ Fetch all jobs
-        model.addAttribute("jobs", jobService.getAllJobs());
+        int pageSize = 5; // Jobs per page
+
+        Page<Job> jobPage = jobService.getJobsWithPagination(keyword, title, company, location, minSalary, maxSalary, page, pageSize);
+        model.addAttribute("jobs", jobPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", jobPage.getTotalPages());
+
+        // Preserve filter values in the form
+        model.addAttribute("filterTitle", title);
+        model.addAttribute("filterCompany", company);
+        model.addAttribute("filterLocation", location);
+        model.addAttribute("filterMinSalary", minSalary);
+        model.addAttribute("filterMaxSalary", maxSalary);
+        model.addAttribute("keyword", keyword);
 
         return "dashboard";
     }
+
+
+    // ✅ Show edit job form
+    @GetMapping("/jobs/edit/{id}")
+    public String editJobForm(@PathVariable Long id, Model model) {
+        Job job = jobService.getJobById(id);
+        if (job == null) {
+            return "redirect:/dashboard"; // job not found
+        }
+        model.addAttribute("job", job);
+        return "edit_job"; // create edit_job.html
+    }
+
+    // ✅ Handle edit job submission
+    @PostMapping("/jobs/edit")
+    public String editJobSubmit(@RequestParam Long id,
+                                @RequestParam String title,
+                                @RequestParam String companyName,
+                                @RequestParam String location,
+                                @RequestParam Double salary,
+                                @RequestParam String skills) {
+
+        Job job = jobService.getJobById(id);
+        if (job != null) {
+            job.setTitle(title);
+            job.setCompanyName(companyName);
+            job.setLocation(location);
+            job.setSalary(salary);
+            job.setSkills(skills);
+            jobService.postJob(job); // save updated job
+        }
+        return "redirect:/dashboard";
+    }
+
+    // ✅ Delete job
+    @GetMapping("/jobs/delete/{id}")
+    public String deleteJob(@PathVariable Long id) {
+        jobService.deleteJob(id);
+        return "redirect:/dashboard";
+    }
+
 }
